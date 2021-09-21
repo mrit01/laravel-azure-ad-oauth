@@ -18,7 +18,7 @@ class AuthController extends Controller
 
         $authUser = $this->findOrCreateUser($user);
 
-        auth()->gaurd(config('azure-oath.gaurd'))->login($authUser, true);
+        auth()->gaurd(config('azure-oath.guard'))->login($authUser, true);
 
         // session([
         //     'azure_user' => $user
