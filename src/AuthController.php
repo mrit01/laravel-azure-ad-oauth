@@ -3,6 +3,7 @@
 namespace Metrogistics\AzureSocialite;
 
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
@@ -18,8 +19,9 @@ class AuthController extends Controller
 
         $authUser = $this->findOrCreateUser($user);
 
-        auth()->gaurd(config('azure-oath.guard'))->login($authUser, true);
+       // Auth::guard('operator')->login($authUser);
 
+        auth()->guard(config('azure-oath.guard'))->login($authUser);
         // session([
         //     'azure_user' => $user
         // ]);
@@ -32,9 +34,11 @@ class AuthController extends Controller
     protected function findOrCreateUser($user)
     {
         $user_class = config('azure-oath.user_class');
-        $authUser = $user_class::where(config('azure-oath.user_id_field'), $user->id)->first();
-
+        $id_field = config('azure-oath.user_id_field');
+        $authUser = $user_class::where('email', $user->email)->first();
         if ($authUser) {
+            $authUser->$id_field = $user->id;
+            $authUser->save();
             return $authUser;
         }
 
